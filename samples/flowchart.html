@@ -92,7 +92,7 @@
 
       // define the Node templates for regular nodes
 
-      myDiagram.nodeTemplateMap.add("",  // the default category
+      myDiagram.nodeTemplateMap.add("Module",  // the default category
         $(go.Node, "Table", nodeStyle(),
           // the main object is a Panel that surrounds a TextBlock with a rectangular Shape
           $(go.Panel, "Auto",
@@ -101,69 +101,19 @@
               new go.Binding("figure", "figure")),
             $(go.TextBlock, textStyle(),
               {
+                textAlign: "center",
                 margin: 8,
                 maxSize: new go.Size(160, NaN),
                 wrap: go.TextBlock.WrapFit,
                 editable: true
               },
-              new go.Binding("text").makeTwoWay())
+              new go.Binding("text", "name").makeTwoWay()),
           ),
           // four named ports, one on each side:
           makePort("T", go.Spot.Top, go.Spot.TopSide, false, true),
           makePort("L", go.Spot.Left, go.Spot.LeftSide, true, true),
           makePort("R", go.Spot.Right, go.Spot.RightSide, true, true),
           makePort("B", go.Spot.Bottom, go.Spot.BottomSide, true, false)
-        ));
-
-      myDiagram.nodeTemplateMap.add("Conditional",
-        $(go.Node, "Table", nodeStyle(),
-          // the main object is a Panel that surrounds a TextBlock with a rectangular Shape
-          $(go.Panel, "Auto",
-            $(go.Shape, "Diamond",
-              { fill: "#282c34", stroke: "#00A9C9", strokeWidth: 3.5 },
-              new go.Binding("figure", "figure")),
-            $(go.TextBlock, textStyle(),
-              {
-                margin: 8,
-                maxSize: new go.Size(160, NaN),
-                wrap: go.TextBlock.WrapFit,
-                editable: true
-              },
-              new go.Binding("text").makeTwoWay())
-          ),
-          // four named ports, one on each side:
-          makePort("T", go.Spot.Top, go.Spot.Top, false, true),
-          makePort("L", go.Spot.Left, go.Spot.Left, true, true),
-          makePort("R", go.Spot.Right, go.Spot.Right, true, true),
-          makePort("B", go.Spot.Bottom, go.Spot.Bottom, true, false)
-        ));
-
-      myDiagram.nodeTemplateMap.add("Start",
-        $(go.Node, "Table", nodeStyle(),
-          $(go.Panel, "Spot",
-            $(go.Shape, "Circle",
-              { desiredSize: new go.Size(70, 70), fill: "#282c34", stroke: "#09d3ac", strokeWidth: 3.5 }),
-            $(go.TextBlock, "Start", textStyle(),
-              new go.Binding("text"))
-          ),
-          // three named ports, one on each side except the top, all output only:
-          makePort("L", go.Spot.Left, go.Spot.Left, true, false),
-          makePort("R", go.Spot.Right, go.Spot.Right, true, false),
-          makePort("B", go.Spot.Bottom, go.Spot.Bottom, true, false)
-        ));
-
-      myDiagram.nodeTemplateMap.add("End",
-        $(go.Node, "Table", nodeStyle(),
-          $(go.Panel, "Spot",
-            $(go.Shape, "Circle",
-              { desiredSize: new go.Size(60, 60), fill: "#282c34", stroke: "#DC3C00", strokeWidth: 3.5 }),
-            $(go.TextBlock, "End", textStyle(),
-              new go.Binding("text"))
-          ),
-          // three named ports, one on each side except the bottom, all input only:
-          makePort("T", go.Spot.Top, go.Spot.Top, false, true),
-          makePort("L", go.Spot.Left, go.Spot.Left, false, true),
-          makePort("R", go.Spot.Right, go.Spot.Right, false, true)
         ));
 
       // taken from ../extensions/Figures.js:
@@ -184,23 +134,6 @@
         geo.spot2 = go.Spot.BottomRight;
         return geo;
       });
-
-      myDiagram.nodeTemplateMap.add("Comment",
-        $(go.Node, "Auto", nodeStyle(),
-          $(go.Shape, "File",
-            { fill: "#282c34", stroke: "#DEE0A3", strokeWidth: 3 }),
-          $(go.TextBlock, textStyle(),
-            {
-              margin: 8,
-              maxSize: new go.Size(200, NaN),
-              wrap: go.TextBlock.WrapFit,
-              textAlign: "center",
-              editable: true
-            },
-            new go.Binding("text").makeTwoWay())
-          // no ports, because no links are allowed to connect with a comment
-        ));
-
 
       // replace the default Link template in the linkTemplateMap
       myDiagram.linkTemplate =
@@ -265,11 +198,7 @@
 
             nodeTemplateMap: myDiagram.nodeTemplateMap,  // share the templates used by myDiagram
             model: new go.GraphLinksModel([  // specify the contents of the Palette
-              { category: "Start", text: "Start" },
-              { text: "Step" },
-              { category: "Conditional", text: "???" },
-              { category: "End", text: "End" },
-              { category: "Comment", text: "Comment" }
+              { category: "Module", name: "Module\nDocker image\nAll outputs" }
             ])
           });
 
@@ -322,16 +251,9 @@
 <body onload="init()">
 <div id="sample">
   <div style="width: 100%; display: flex; justify-content: space-between">
-    <div id="myPaletteDiv" style="width: 100px; margin-right: 2px; background-color: #282c34;"></div>
+    <div id="myPaletteDiv" style="width: 250px; margin-right: 2px; background-color: #282c34;"></div>
     <div id="myDiagramDiv" style="flex-grow: 1; height: 750px; background-color: #282c34;"></div>
   </div>
-  <p>
-  The FlowChart sample demonstrates several key features of GoJS,
-  namely <a href="../intro/palette.html">Palette</a>s,
-  <a href="../intro/links.html">Linkable nodes</a>, Drag/Drop behavior,
-  <a href="../intro/textBlocks.html">Text Editing</a>, and the use of
-  <a href="../intro/templateMaps.html">Node Template Maps</a> in Diagrams.
-  </p>
   <p>
   Mouse-over a Node to view its ports.
   Drag from these ports to create new Links.
@@ -347,18 +269,12 @@
   "linkFromPortIdProperty": "fromPort",
   "linkToPortIdProperty": "toPort",
   "nodeDataArray": [
-{"category":"Comment", "loc":"360 -10", "text":"Kookie Brittle", "key":-13},
-{"key":-1, "category":"Start", "loc":"175 0", "text":"Start"},
-{"key":0, "loc":"-5 75", "text":"Preheat oven to 375 F"},
-{"key":1, "loc":"175 100", "text":"In a bowl, blend: 1 cup margarine, 1.5 teaspoon vanilla, 1 teaspoon salt"},
-{"key":2, "loc":"175 200", "text":"Gradually beat in 1 cup sugar and 2 cups sifted flour"},
-{"key":3, "loc":"175 290", "text":"Mix in 6 oz (1 cup) Nestle's Semi-Sweet Chocolate Morsels"},
-{"key":4, "loc":"175 380", "text":"Press evenly into ungreased 15x10x1 pan"},
-{"key":5, "loc":"355 85", "text":"Finely chop 1/2 cup of your choice of nuts"},
-{"key":6, "loc":"175 450", "text":"Sprinkle nuts on top"},
-{"key":7, "loc":"175 515", "text":"Bake for 25 minutes and let cool"},
-{"key":8, "loc":"175 585", "text":"Cut into rectangular grid"},
-{"key":-2, "category":"End", "loc":"175 660", "text":"Enjoy!"}
+{"key":1, "category":"Module","loc":"175 90", "name":"Module 1\nDocker 1\nAll outputs"},
+{"key":2, "category":"Module","loc":"175 190", "name":"Module 2\nDocker 2\nbam, bam_idx"},
+{"key":3, "category":"Module","loc":"175 290", "name":"Module 3\nDocker 1\nAll outputs"},
+{"key":4, "category":"Module","loc":"175 390", "name":"Module 4\nDocker 3\nAll outputs"},
+{"key":5, "category":"Module","loc":"300 290", "name":"Module 5\nDocker 4\nAll outputs"},
+{"key":6, "category":"Module","loc":"175 490", "name":"Module 6\nDocker 3\nAll outputs"}
  ],
   "linkDataArray": [
 {"from":1, "to":2, "fromPort":"B", "toPort":"T"},
@@ -367,12 +283,8 @@
 {"from":4, "to":6, "fromPort":"B", "toPort":"T"},
 {"from":6, "to":7, "fromPort":"B", "toPort":"T"},
 {"from":7, "to":8, "fromPort":"B", "toPort":"T"},
-{"from":8, "to":-2, "fromPort":"B", "toPort":"T"},
-{"from":-1, "to":0, "fromPort":"B", "toPort":"T"},
-{"from":-1, "to":1, "fromPort":"B", "toPort":"T"},
-{"from":-1, "to":5, "fromPort":"B", "toPort":"T"},
-{"from":5, "to":4, "fromPort":"B", "toPort":"T"},
-{"from":0, "to":4, "fromPort":"B", "toPort":"T"}
+{"from":2, "to":5, "fromPort":"R", "toPort":"T"},
+{"from":5, "to":4, "fromPort":"B", "toPort":"R"}
  ]}
   </textarea>
   <button onclick="printDiagram()">Print Diagram Using SVG</button>
